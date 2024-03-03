@@ -26,7 +26,7 @@
               class="bg-indigo-100 text-indigo-400 ml-auto w-8 h-8 flex items-center justify-center rounded"
             >
               <svg
-                st🥢roke="currentColor"
+                stroke="currentColor"
                 class="w-4 h-4"
                 viewBox="0 0 24 24"
                 stroke-width="2.2"
@@ -48,6 +48,7 @@
             <div class="relative ml-auto flex-1">
               <div class="flex items-center justify-center w-full">
                 <label
+                  v-if="!file?.size"
                   for="dropzone-file"
                   class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
                 >
@@ -77,39 +78,54 @@
                       SVG, PNG, JPG or GIF (MAX. 800x400px)
                     </p>
                   </div>
-                  <input id="dropzone-file" type="file" class="hidden" />
+                  <input
+                    id="dropzone-file"
+                    class="hidden"
+                    type="file"
+                    @change="handleFileUpload"
+                  />
                 </label>
+                <div>{{ file?.name }}</div>
+                <button
+                  v-if="file?.size"
+                  @click="uploadPhoto"
+                  type="button"
+                  class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                >
+                  送信
+                </button>
+                <button
+                  v-if="file?.size"
+                  type="button"
+                  class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                >
+                  リセット
+                </button>
               </div>
-
-              <svg
-                stroke="currentColor"
-                class="w-4 h-4 absolute right-0 top-0 mt-3 mr-2 text-gray-500"
-                stroke-width="2"
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                viewBox="0 0 24 24"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <path d="M21 21l-4.35-4.35" />
-              </svg>
             </div>
           </div>
         </div>
-        <div class="overflow-auto flex-grow">
+
+        <div v-if="mannerImages" class="overflow-auto flex-grow">
           <div
             class="bg-gray-100 px-8 py-6 flex items-center border-b border-gray-300"
-            v-for="n in 5"
-            :key="n"
+            v-for="mannerImage in mannerImages"
+            :key="mannerImage.key"
           >
             <div class="flex ml-4">
               <img
-                src="https://randomuser.me/api/portraits/women/44.jpg"
+                src="@/assets/img/master_icon.jpg"
                 class="w-10 h-10 object-cover rounded object-top"
               />
               <div class="flex flex-col pl-4">
                 <h2 class="font-medium text-sm">chopsticks master</h2>
-                <h3 class="text-gray-500 text-sm">こう使うんだよ！</h3>
+                <h3 class="text-gray-500 text-sm">
+                  {{ mannerImage.revised_prompt }}
+                </h3>
+                <img
+                  :src="mannerImage.url"
+                  class="w-100 h-100 object-cover rounded object-top"
+                />
               </div>
             </div>
             <button
@@ -134,3 +150,43 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const file = ref<File | null>(null);
+let mannerImages = ref([]);
+
+const handleFileUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const files = target.files;
+  if (files && files.length) {
+    file.value = files[0];
+  }
+};
+
+const uploadPhoto = async () => {
+  if (file.value) {
+    const formData = new FormData();
+    formData.append("file", file.value);
+
+    try {
+      const response = await fetch("/api/book", {
+        method: "POST",
+        body: formData,
+      });
+      const responseData = await response.json(); // レスポンスをJSON形式で解析
+      const images = responseData.image.data; // イメージデータを取得
+
+      console.log(images); // イメージデータの配列をログに表示
+      console.log(images[0].revised_prompt); // 最初のイメージの説明をログに表示
+      console.log(images[0].url); // 最初のイメージのURLをログに表示
+
+      // mannerImagesにイメージ情報を設定
+      mannerImages = images;
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+    }
+  } else {
+    console.error("No file selected");
+  }
+};
+</script>
