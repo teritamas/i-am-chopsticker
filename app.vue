@@ -88,7 +88,7 @@
                 <div>{{ file?.name }}</div>
                 <button
                   v-if="file?.size"
-                  @click="uploadPhoto"
+                  @click="makeManner"
                   type="button"
                   class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                 >
@@ -120,10 +120,10 @@
               <div class="flex flex-col pl-4">
                 <h2 class="font-medium text-sm">chopsticks master</h2>
                 <h3 class="text-gray-500 text-sm">
-                  {{ mannerImage.revised_prompt }}
+                  {{ mannerImage.manner }}
                 </h3>
                 <img
-                  :src="mannerImage.url"
+                  :src="mannerImage.imageUrl"
                   class="w-100 h-100 object-cover rounded object-top"
                 />
               </div>
@@ -152,8 +152,13 @@
 </template>
 
 <script setup lang="ts">
+import type {
+  MannerItem,
+  PostBookResponse,
+} from "./server/models/book/response";
+
 const file = ref<File | null>(null);
-let mannerImages = ref([]);
+let mannerImages = ref([] as MannerItem[]);
 
 const handleFileUpload = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -163,30 +168,29 @@ const handleFileUpload = (event: Event) => {
   }
 };
 
-const uploadPhoto = async () => {
-  if (file.value) {
-    const formData = new FormData();
-    formData.append("file", file.value);
-
-    try {
-      const response = await fetch("/api/book", {
-        method: "POST",
-        body: formData,
-      });
-      const responseData = await response.json(); // レスポンスをJSON形式で解析
-      const images = responseData.image.data; // イメージデータを取得
-
-      console.log(images); // イメージデータの配列をログに表示
-      console.log(images[0].revised_prompt); // 最初のイメージの説明をログに表示
-      console.log(images[0].url); // 最初のイメージのURLをログに表示
-
-      // mannerImagesにイメージ情報を設定
-      mannerImages = images;
-    } catch (error) {
-      console.error("Error uploading photo:", error);
-    }
-  } else {
+const makeManner = async () => {
+  if (!file.value) {
     console.error("No file selected");
+    return;
+  }
+  const formData = new FormData();
+  formData.append("file", file.value);
+
+  try {
+    const response = await fetch("/api/book", {
+      method: "POST",
+      body: formData,
+    });
+    // PostBookResponseの型でレスポンスを受け取る
+
+    const responseData = (await response.json()) as PostBookResponse; // レスポンスをJSON形式で解析
+    // stepでソート
+    // mannerImagesにイメージ情報を設定
+    const list = responseData.list;
+    list.sort((a, b) => a.step - b.step);
+    mannerImages.value = list;
+  } catch (error) {
+    console.error("Error uploading photo:", error);
   }
 };
 </script>

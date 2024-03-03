@@ -6,33 +6,6 @@ const openai = new OpenAI({
 });
 
 /**
- * OpenAIのChatGPTを利用して文章を生成する
- */
-async function request(prompt: string) {
-  try {
-    console.log("生成を開始します: ", prompt);
-
-    const result = await openai.chat.completions.create({
-      model: "gpt-4-1106-preview",
-      temperature: 0,
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-    });
-    const response = result.choices[0].message.content;
-    console.log("生成が完了しました: ", response);
-
-    return response;
-  } catch (e) {
-    console.error("生成に失敗しました: ", e);
-    return null;
-  }
-}
-
-/**
  * OpenAIのChatGPTを利用して、画像を入力として文章を生成する
  * https://platform.openai.com/docs/api-reference
  */
