@@ -74,7 +74,9 @@ export async function teachMannerFromImage(
   base64Image: string
 ): Promise<TeachMannerResponse[] | null> {
   try {
-    const prompt = `Please teach the manner of eating the food shown in the image well with chopsticks in three steps.
+    const prompt = `You are an instructor of Japanese cultural etiquette.
+
+Please teach the manner of eating the food shown in the image well with chopsticks in three steps.
 Please keep the number of characters per step under 1000.
 The format must follow
 [{
@@ -103,7 +105,10 @@ export async function makeImageFromManner(
   manners: string
 ): Promise<string | null | undefined> {
   try {
-    const prompt = `以下の手順の画像を作成してください。 "${manners}"`;
+    const prompt = `"${manners}"
+- Chopsticks must be a pair only.
+- Chopsticks must be held in only one hand.
+- Style Cartoon style`;
     const response = await requestMakeImage(prompt);
 
     return response?.data[0].url;
