@@ -1,4 +1,5 @@
 <template>
+  <Loading v-if="isLoading" />
   <div
     class="h-screen w-screen bg-indigo-400 overflow-hidden absolute flex items-center"
   >
@@ -16,13 +17,13 @@
 
   <div class="container mx-auto h-screen py-16 px-8 relative">
     <div
-      class="flex w-full rounded-lg h-full lg:overflow-hidden overflow-auto lg:flex-row flex-col shadow-2xl"
+      class="flex max-w-screen-sm mx-auto rounded-lg h-full overflow-auto flex-col"
     >
-      <div class="lg:w-full bg-white text-gray-800 flex flex-col">
+      <div class="max-w-screen-sm bg-white text-gray-800 flex flex-col">
         <div class="p-8 shadow-md relative bg-white">
           <div class="flex items-center">
             <div class="text-indigo-600 font-medium">I am chopsticker</div>
-            <button
+            <!--<button
               class="bg-indigo-100 text-indigo-400 ml-auto w-8 h-8 flex items-center justify-center rounded"
             >
               <svg
@@ -38,7 +39,7 @@
                   d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"
                 />
               </svg>
-            </button>
+            </button>-->
           </div>
           <h1 class="font-medium text-lg mt-6">写真を追加してください</h1>
           <p class="text-gray-600 text-sm">
@@ -85,22 +86,12 @@
                     @change="handleFileUpload"
                   />
                 </label>
-                <div>{{ file?.name }}</div>
-                <button
+                <img
                   v-if="file?.size"
-                  @click="makeManner"
-                  type="button"
-                  class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                >
-                  送信
-                </button>
-                <button
-                  v-if="file?.size"
-                  type="button"
-                  class="py-2.5 px-5 me-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                >
-                  リセット
-                </button>
+                  :src="fileUrl"
+                  class="h-auto max-w-lg rounded-lg"
+                  alt="アップロードされた画像のプレビュー"
+                />
               </div>
             </div>
           </div>
@@ -124,11 +115,11 @@
                 </h3>
                 <img
                   :src="mannerImage.imageUrl"
-                  class="w-100 h-100 object-cover rounded object-top"
+                  class="max-w-sm mt-3 rounded-lg"
                 />
               </div>
             </div>
-            <button
+            <!--<button
               class="text-gray-500 flex items-center text-sm focus:outline-none rounded ml-auto py-2 leading-none"
             >
               <svg
@@ -143,7 +134,7 @@
                   d="M533.6 32.5C598.5 85.2 640 165.8 640 256s-41.5 170.7-106.4 223.5c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C557.5 398.2 592 331.2 592 256s-34.5-142.2-88.7-186.3c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zM473.1 107c43.2 35.2 70.9 88.9 70.9 149s-27.7 113.8-70.9 149c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C475.3 341.3 496 301.1 496 256s-20.7-85.3-53.2-111.8c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zm-60.5 74.5C434.1 199.1 448 225.9 448 256s-13.9 56.9-35.4 74.5c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C393.1 284.4 400 271 400 256s-6.9-28.4-17.7-37.3c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zM301.1 34.8C312.6 40 320 51.4 320 64V448c0 12.6-7.4 24-18.9 29.2s-25 3.1-34.4-5.3L131.8 352H64c-35.3 0-64-28.7-64-64V224c0-35.3 28.7-64 64-64h67.8L266.7 40.1c9.4-8.4 22.9-10.4 34.4-5.3z"
                 />
               </svg>
-            </button>
+            </button>-->
           </div>
         </div>
       </div>
@@ -157,7 +148,9 @@ import type {
   PostBookResponse,
 } from "./server/models/book/response";
 
+const isLoading = ref(false);
 const file = ref<File | null>(null);
+const fileUrl = ref("");
 let mannerImages = ref([] as MannerItem[]);
 
 const handleFileUpload = (event: Event) => {
@@ -165,7 +158,10 @@ const handleFileUpload = (event: Event) => {
   const files = target.files;
   if (files && files.length) {
     file.value = files[0];
+    fileUrl.value = URL.createObjectURL(files[0]);
   }
+  isLoading.value = true;
+  makeManner();
 };
 
 const makeManner = async () => {
@@ -189,6 +185,7 @@ const makeManner = async () => {
     const list = responseData.list;
     list.sort((a, b) => a.step - b.step);
     mannerImages.value = list;
+    isLoading.value = false;
   } catch (error) {
     console.error("Error uploading photo:", error);
   }
