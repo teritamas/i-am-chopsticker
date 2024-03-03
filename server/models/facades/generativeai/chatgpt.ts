@@ -1,4 +1,4 @@
-export interface CreateBingoCellThemeResponse {
-    name: string;
-    description: string;
-  }
+export interface TeachMannerResponse {
+  step: number;
+  manner: string;
+}
