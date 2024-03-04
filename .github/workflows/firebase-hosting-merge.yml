@@ -26,3 +26,4 @@ jobs:
           npx firebase-tools deploy
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ./firebase-service-account.json
+          FIREBASE_CLI_EXPERIMENTS: webframeworks
