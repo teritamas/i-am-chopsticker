@@ -1,0 +1,15 @@
+{
+  "functions": {
+    "source": ".output/server",
+    "runtime": "nodejs18"
+  },
+  "hosting": {
+    "source": ".",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "frameworksBackend": {
+      "region": "us-central1"
+    },
+    "cleanUrls": true,
+    "rewrites": [{ "source": "**", "function": "server" }]
+  }
+}
