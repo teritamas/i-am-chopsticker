@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
     const response = { list: [] } as PostBookResponse;
     // 手順から画像を生成しURLを返す。
     for (const manner of manners) {
-      const imageUrl = await makeImageFromManner(manner.manner);
+      const imageUrl = await makeImageFromManner(manner.manner_en, manner.menu_en, manner.position_en);
       const item = {
         step: manner.step,
         manner: manner.manner,

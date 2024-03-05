@@ -77,18 +77,25 @@ export async function teachMannerFromImage(
     const prompt = `You are an instructor of Japanese cultural etiquette.
 
 Please teach the manner of eating the food shown in the image well with chopsticks in three steps.
-Please keep the number of characters per step under 1000.
+Please keep the number of characters per step under 2500.
 The format must follow
 [{
-  "step": "steps 1~3 with no overlap",
-  "manner": "manner of eating the food shown in the image well with chopsticks."
+    "menu": "the main food shown in the image",
+    "menu_en": "the main food shown in the image(English)",
+    "position": "the position of the food in the image",
+    "position_en": "the position of the food in the image(English)",
+    "step": "steps 1~3 with no overlap",
+    "step_en": "steps 1~3 with no overlap(English)",
+    "manner": "manner of eating the food shown in the image well with chopsticks."
+    "manner_en": "manner of eating the food shown in the image well with chopsticks.(English)"
 },]
 
 Delete code blocks.
 Delete information other than JSON.
 Value is natural Japanese as Japanese would return it.
+However, if it says (English), please write in English.
 Keys must be included.
-Must be an array.`;
+Must be an array of length 3 for each step.`;
     const response = await requestImage(prompt, base64Image);
     const dto = JSON.parse(response!) as TeachMannerResponse[];
     return dto;
@@ -102,12 +109,18 @@ Must be an array.`;
  * 手順から画像を生成しURLを返す。
  */
 export async function makeImageFromManner(
-  manners: string
+  manner: string,
+  menu: string,
+  position: string,
 ): Promise<string | null | undefined> {
   try {
-    const prompt = `"${manners}"
+    const prompt = `Draw an illustration of eating the following foods.
+    food: "${menu}"
+    the position of the food in the image:"${position}"
+    situation:"${manner}"
 - Chopsticks must be a pair only.
 - Chopsticks must be held in only one hand.
+- Draw delicious-looking illustrations that will whet your appetite.
 - Style Cartoon style`;
     const response = await requestMakeImage(prompt);
 

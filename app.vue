@@ -93,6 +93,31 @@
                   alt="アップロードされた画像のプレビュー"
                 />
               </div>
+              <div class="inline-flex items-center">
+                <button
+                  v-if="file?.size"
+                  @click="reset()"
+                  type="button"
+                  class="mt-3 text-gray-900 inline-flex items-center bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                >
+                  <svg
+                    class="w-3.5 h-3.5 me-2"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17.7 7.7A7.1 7.1 0 0 0 5 10.8M18 4v4h-4m-7.7 8.3A7.1 7.1 0 0 0 19 13.2M6 20v-4h4"
+                    />
+                  </svg>
+                  リトライ
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -152,6 +177,11 @@ const isLoading = ref(false);
 const file = ref<File | null>(null);
 const fileUrl = ref("");
 let mannerImages = ref([] as MannerItem[]);
+
+const reset = () => {
+  file.value = null;
+  mannerImages.value = [];
+};
 
 const handleFileUpload = (event: Event) => {
   const target = event.target as HTMLInputElement;
