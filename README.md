@@ -1,75 +1,48 @@
-# Nuxt 3 Minimal Starter
+# I Am Chopsticker
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## 概要
 
-## Setup
+食べ物の写真を投稿するだけで、AI がその食べ物を箸を使って食べる時の正しい使い方を教えてくれます。
 
-Make sure to install the dependencies:
+本アプリケーションの操作方法や概要については下記の URL を参照してください
+
+- [I am chopsticker | AKINDO](https://app.akindo.io/communities/d8kNM9RxRiJDRQ2GM/products/VwGp9xE8ptQvJXZl3?tab=overview)
+
+## Quick Start
+
+本アプリケーションのローカルでの起動方法です。
+
+### 1. 必要情報の取得
+
+はじめに下記のサービスにアクセスし、利用に必要な情報を取得する。API キーやアカウントが存在しない場合は作成する。
+
+| サービス名 | URL                      | 必要な情報 |
+| ---------- | ------------------------ | ---------- |
+| OpenAI     | https://beta.openai.com/ | API キー   |
+
+#### 1.1 `.env`の作成
+
+`.env`を作成する。その後、Open AI 　の API キーの情報を`.env`に設定する。
+
+```bash:.env
+# openaiから取得したAPI Keyを設定
+OPENAI_API_KEY=${openaiのAPI Key}
+```
+
+### 2. 初期設定
+
+パッケージのインストール
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+開発サーバを立ち上げます。
 
 ```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+以下の URL にアクセスすることでデモ画面を確認できます。
 
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+- http://localhost:3000/
